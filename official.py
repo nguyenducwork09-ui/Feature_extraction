@@ -29,7 +29,7 @@ HAND_CONNECTIONS = [
 CONFIDENCE_VALUE = 0.8
 
 # 1. Khởi tạo Holistic
-base_options = python.BaseOptions(model_asset_path='holistic_landmarker.task')
+base_options = python.BaseOptions(model_asset_path='holistic_landmarker.task', delegate=mp.tasks.BaseOptions.Delegate.GPU)
 options = vision.HolisticLandmarkerOptions(
     base_options=base_options,
     output_face_blendshapes=True,
