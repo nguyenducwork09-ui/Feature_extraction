@@ -10,13 +10,19 @@ from rtmlib import Wholebody, draw_skeleton
 # Muốn siêu nhanh trên edge thì đổi thành mode='lightweight'
 
 
-cudnn_dir = r"C:\Users\maxvn\AppData\Local\Programs\Python\Python314\Lib\site-packages\nvidia\cudnn\bin"
-cuda_dir = r"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8\bin"
+# Bắt buộc trỏ về CUDA v12.8 để khớp với DLL cu12 của onnxruntime-gpu
+cuda_bin = r"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8\bin"
+cudnn_bin = r"C:\Users\maxvn\AppData\Local\Programs\Python\Python314\Lib\site-packages\nvidia\cudnn\bin"
+cublas_bin = r"C:\Users\maxvn\AppData\Local\Programs\Python\Python314\Lib\site-packages\nvidia\cublas\bin"
 
-if os.path.exists(cudnn_dir):
-    os.add_dll_directory(cudnn_dir)
-if os.path.exists(cuda_dir):
-    os.add_dll_directory(cuda_dir)
+for p in [cuda_bin, cudnn_bin, cublas_bin]:
+    if os.path.exists(p):
+        os.environ["PATH"] = p + os.pathsep + os.environ["PATH"]
+        if hasattr(os, "add_dll_directory"):
+            try:
+                os.add_dll_directory(p)
+            except Exception:
+                pass
 
 
 
@@ -116,6 +122,7 @@ def save_vector_to_csv(vector, file_path="dataset.csv", label="A"):
 cap = cv2.VideoCapture(0)
 
 if __name__ == "__main__":
+    wholebody = Wholebody(mode='lightweight', device='cuda')
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
